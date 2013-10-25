@@ -1,0 +1,261 @@
+import java_cup.runtime.*;
+import ast.*;
+
+action code{: 
+
+:}
+
+parser code{:
+	public static void main(String args[]) throws Exception {
+		SymbolFactory sf = new DefaultSymbolFactory();
+		parser obj_parser;
+		if (args.length==0) 
+			obj_parser=new parser(new Scanner(System.in,sf),sf);
+		else 
+			obj_parser=new parser(new Scanner(new java.io.FileInputStream(args[0]),sf),sf);
+		
+		obj_parser.parse();	
+	}
+:}
+
+/* Nodos terminales */
+
+terminal PROG;
+terminal NUM;
+terminal ID;
+terminal IF;
+terminal ELSE;
+terminal DO;
+terminal WHILE;
+terminal ASIGNA;
+terminal MAS;
+terminal MOD;
+terminal IGUAL;
+terminal POR;
+terminal MENOS;
+terminal ENTRE;
+terminal LPAR;
+terminal RPAR;
+terminal PCOMA;
+terminal MQ;
+terminal mQ;
+terminal MIGUAL;
+terminal mIGUAL;
+terminal DIF;
+terminal AND;
+terminal OR;
+terminal NOT;
+terminal FOR;
+terminal INT;
+terminal BOOL;
+terminal LBRACK;
+terminal RBRACK;
+terminal LCOR;
+terminal RCOR;
+terminal TRUE;
+terminal FALSE;
+terminal AVANZAR;
+terminal MIRARABAJO;
+terminal MIRARARRIBA;
+terminal MIRARIZQ;
+terminal MIRARDER;
+
+/* Nodos no terminales*/
+
+non terminal programa;
+non terminal NodoBase seq;
+non terminal NodoBase sent;
+non terminal NodoBase func;
+non terminal NodoBase declar;
+non terminal NodoBase ciclow;
+non terminal NodoBase cfor;
+non terminal NodoBase asigna;
+non terminal NodoBase sentif;
+non terminal NodoBase tipodato;
+non terminal NodoBase valog;
+non terminal NodoBase ident;
+non terminal NodoBase expr;
+non terminal NodoBase expl;
+non terminal NodoBase expa;
+non terminal NodoBase opl;
+non terminal NodoBase expn;
+non terminal NodoBase opa;
+
+/* Reglas gramaticales */
+
+programa ::= PROG LPAR RPAR LBRACK seq RBRACK {: 
+		System.out.println("Regla programa");
+:}
+;
+seq ::= seq PCOMA sent {: 
+				System.out.println("Regla SEQ 1");
+		  :}
+		| sent {:
+				System.out.println("Regla SEQ 2");
+		:}
+;
+sent ::= func {:
+ 				System.out.println("Regla SENT - FUNC");	
+		:}
+		| declar {:
+				System.out.println("Regla SENT - DECLAR");		
+		:}
+		| ciclow {:
+				System.out.println("Regla SENT - CICLOW");
+		:}
+		| asigna {:
+				System.out.println("Regla SENT - ASIGNA");
+		:}
+		|cfor {:
+				System.out.println("Regla SENT - CFOR");
+		:}
+		| sentif {:
+				System.out.println("Regla SENT - SENTIF");
+		:}
+;
+expr ::= NUM {:
+				System.out.println("Regla EXPR - NUM");
+		:}
+		| valog {:
+				System.out.println("Regla EXPR - VALOG");
+		:}
+		| ID {:
+				System.out.println("Regla EXPR - ID");
+		:}
+;
+func ::= AVANZAR LPAR NUM RPAR{:
+				System.out.println("Regla FUNC - AVANZAR(num)");
+		:}
+		| AVANZAR LPAR ident RPAR{:
+				System.out.println("Regla FUNC - AVANZAR(id)");
+		:}
+		| MIRARABAJO LPAR RPAR{:
+				System.out.println("Regla FUNC - MIRARABAJO()");
+		:}
+		| MIRARARRIBA LPAR RPAR{:
+				System.out.println("Regla FUNC - MIRARARRIBA()");
+		:}
+		| MIRARIZQ LPAR RPAR{:
+				System.out.println("Regla FUNC - MIRARIZQ()");
+		:}
+		| MIRARDER LPAR RPAR{:
+				System.out.println("Regla FUNC - MIRARDER()");
+		:}
+;
+declar ::= tipodato ident {:
+				System.out.println("Regla DECLAR - TIPO IDENT()");
+		:}
+		| tipodato ident LCOR expr RCOR {:
+				System.out.println("Regla DECL -TIPO IDENT[]()");
+		:}
+		| tipodato ident LCOR expa RCOR {:
+				System.out.println("Regla DECL - TIPO IDENT[expa]");
+		:}
+;
+tipodato ::= INT {:
+			System.out.println("INT");
+		:}
+		| BOOL {:
+			System.out.println("BOOL");
+		:}
+;
+valog ::= TRUE {:
+			System.out.println("TRUE");
+		:}
+		| FALSE {:
+			System.out.println("FALSE");
+		:}
+;
+ident ::= ID NUM {:
+			System.out.println("Regla IDENT - ID NUM");
+		:}
+		| ID {:
+			System.out.println("Regla IDENT - ID");
+		:}
+;
+ciclow ::= DO LBRACK seq RBRACK WHILE LPAR expl RPAR {:
+			System.out.println("Regla CICLOW");
+		:}
+;
+asigna ::= ID ASIGNA expr {:
+			System.out.println("Regla ASIGNA ");
+		:}
+;
+opl ::=  MQ {:
+			System.out.println(" > ");
+		:}
+		|
+		mQ {:
+			System.out.println(" < ");
+		:}
+		|
+		MIGUAL {:
+			System.out.println(" >= ");
+		:}
+		| mIGUAL {:
+			System.out.println(" <= ");
+		:}
+		| IGUAL {:
+			System.out.println(" = ");
+		:}
+		| DIF {:
+			System.out.println(" <> ");
+		:}
+		| AND {:
+			System.out.println(" && ");
+		:}
+		| NOT {:
+			System.out.println(" ! ");
+		:}
+		| OR {:
+			System.out.println(" || ");
+		:}
+;
+expl ::= expr opl expl {:
+			System.out.println("Regla EXPL - 1");
+		:}
+		| expr {:
+			System.out.println("Regla EXPL - 2");
+		:}
+		| LPAR expn RPAR {:
+			System.out.println("Regla EXPL - (EXPN)");
+		:}
+;
+expn ::= NOT expr {:
+			System.out.println("Regla EXPN ");
+		:}
+;
+opa ::= MAS {:
+			System.out.println(" + ");
+		:}
+		| MENOS {:
+			System.out.println(" - ");
+		:}
+		| POR {:
+			System.out.println(" * ");
+		:}
+		| ENTRE {:
+			System.out.println(" / ");
+		:}
+		| MOD {:
+			System.out.println(" % ");
+		:}
+;
+expa ::= expa opa expr {:
+			System.out.println("Regla EXPA - 1");
+		:}
+		| LPAR expr RPAR {:
+			System.out.println("Regla EXPA - (expr) ");
+		:}
+;
+sentif ::= IF LPAR expl RPAR LBRACK seq RBRACK {:
+			System.out.println("Regla SENTIF - IF simple");
+		:}
+		|IF LPAR expl RPAR LBRACK seq RBRACK ELSE LBRACK seq RBRACK {:
+			System.out.println("Regla SENTIF - IF-ELSE");
+		:}
+;
+cfor ::= FOR LPAR asigna PCOMA expa PCOMA expl PCOMA RPAR LBRACK seq RBRACK {:
+			System.out.println("Regla CFOR");
+		:}
+;
