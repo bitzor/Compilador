@@ -170,5 +170,4 @@ espacio		= [ \t]+
 
 {nuevalinea}       {lineanum++;}
 {espacio}    { if(debug) System.out.println("token ESPACIOS");}
-"{"[^}]+"}"  { /* salto comentarios */ if(debug) System.out.println("token COMENTARIO"); }
-.               {System.err.println("Caracter Ilegal encontrado en analisis lexico: " + yytext() + "\n");}
+.            {System.err.println("Caracter Ilegal encontrado en analisis lexico: " + yytext() + "\n");}

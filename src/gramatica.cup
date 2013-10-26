@@ -62,7 +62,7 @@ terminal MIRARDER;
 
 /* Nodos no terminales*/
 
-non terminal programa;
+non terminal NodoBase programa;
 non terminal NodoBase seq;
 non terminal NodoBase sent;
 non terminal NodoBase func;
@@ -82,17 +82,19 @@ non terminal NodoBase expn;
 non terminal NodoBase opa;
 
 /* Reglas gramaticales */
-
 programa ::= PROG LPAR RPAR LBRACK seq RBRACK {: 
 		System.out.println("Regla programa");
 :}
 ;
-seq ::= seq PCOMA sent {: 
+seq ::= sent PCOMA seq {: 
 				System.out.println("Regla SEQ 1");
 		  :}
-		| sent {:
+		| sent PCOMA {:
 				System.out.println("Regla SEQ 2");
 		:}
+		| sent {:
+				System.out.println("Regla SEQ 3");
+		:}		
 ;
 sent ::= func {:
  				System.out.println("Regla SENT - FUNC");	
@@ -143,10 +145,10 @@ func ::= AVANZAR LPAR NUM RPAR{:
 		:}
 ;
 declar ::= tipodato ident {:
-				System.out.println("Regla DECLAR - TIPO IDENT()");
+				System.out.println("Regla DECLAR - TIPO IDENT");
 		:}
 		| tipodato ident LCOR expr RCOR {:
-				System.out.println("Regla DECL -TIPO IDENT[]()");
+				System.out.println("Regla DECL -TIPO IDENT[]");
 		:}
 		| tipodato ident LCOR expa RCOR {:
 				System.out.println("Regla DECL - TIPO IDENT[expa]");

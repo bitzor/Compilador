@@ -1,3 +1,5 @@
 programa(){
-	int cosa;
+	if(a > b){
+		int b;
+	}
 }
