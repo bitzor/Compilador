@@ -1,10 +1,6 @@
 import java_cup.runtime.*;
 import ast.*;
 
-action code{: 
-
-:}
-
 parser code{:
 	public static void main(String args[]) throws Exception {
 		SymbolFactory sf = new DefaultSymbolFactory();
@@ -15,7 +11,24 @@ parser code{:
 			obj_parser=new parser(new Scanner(new java.io.FileInputStream(args[0]),sf),sf);
 		
 		obj_parser.parse();	
+    /*Inicio Arbol*/
+    	NodoBase root= obj_parser.action_obj.getASTroot();
+		System.out.println();
+		System.out.println("IMPRESION DEL AST GENERADO");
+		System.out.println();
+		ast.Util.imprimirAST(root);
 	}
+:}
+action code {:
+	private boolean debug=true;
+	private NodoBase ast = null;
+	private int lineanum=0;
+	
+	//Debe ser llamada solo despues de un parse(), en caso contrario retornara null siempre;
+	public NodoBase getASTroot(){
+		return ast;
+	}
+	
 :}
 
 /* Nodos terminales */
@@ -82,47 +95,75 @@ non terminal NodoBase expn;
 non terminal NodoBase opa;
 
 /* Reglas gramaticales */
-programa ::= PROG LPAR RPAR LBRACK seq RBRACK {: 
+programa ::= PROG LPAR RPAR LBRACK seq:s RBRACK {: 
 		System.out.println("Regla programa");
+		ast = s;
 :}
 ;
-seq ::= sent PCOMA seq {: 
+seq ::= sent:ini PCOMA seq:sent {: 
 				System.out.println("Regla SEQ 1");
+					NodoBase hijoActual = ini;
+						if(hijoActual !=null){
+							while(hijoActual.TieneHermano()){
+								hijoActual = hijoActual.getHermanoDerecha();
+							}
+							hijoActual.setHermanoDerecha(sent);
+							RESULT=ini;
+						}else{
+							RESULT=sent;
+						}
+				
 		  :}
-		| sent PCOMA {:
+		| sent:sen PCOMA {:
 				System.out.println("Regla SEQ 2");
+				RESULT = sen;
 		:}
-		| sent {:
+		| sent:sen {:
 				System.out.println("Regla SEQ 3");
+				RESULT = sen;
 		:}		
 ;
-sent ::= func {:
+sent ::= func:fun {:
  				System.out.println("Regla SENT - FUNC");	
+ 				RESULT = fun;
 		:}
-		| declar {:
-				System.out.println("Regla SENT - DECLAR");		
+		| declar:decl {:
+				System.out.println("Regla SENT - DECLAR");	
+				RESULT = decl;	
 		:}
-		| ciclow {:
+		| ciclow:ciclo {:
 				System.out.println("Regla SENT - CICLOW");
+				RESULT = ciclo;
 		:}
-		| asigna {:
+		| asigna:asig {:
 				System.out.println("Regla SENT - ASIGNA");
+				RESULT = asig;
 		:}
-		|cfor {:
+		|cfor:cfor {:
 				System.out.println("Regla SENT - CFOR");
+				RESULT = cfor;
 		:}
-		| sentif {:
+		| sentif:sent_if {:
 				System.out.println("Regla SENT - SENTIF");
+				RESULT = sent_if;
 		:}
 ;
-expr ::= NUM {:
+expr ::= NUM:valor {:
 				System.out.println("Regla EXPR - NUM");
+					if(valor!=null){
+						RESULT= new NodoValor(Integer.parseInt(valor.toString()));					
+					}else{
+						RESULT = null;
+						System.out.println("Ocurrio error en cup # 0005");
+					}
 		:}
-		| valog {:
+		| valog:valor {:
 				System.out.println("Regla EXPR - VALOG");
+				RESULT = valor;
 		:}
-		| ID {:
+		| ID:ident {:
 				System.out.println("Regla EXPR - ID");
+				RESULT = new NodoIdentificador(ident.toString());
 		:}
 ;
 func ::= AVANZAR LPAR NUM RPAR{:
@@ -144,120 +185,133 @@ func ::= AVANZAR LPAR NUM RPAR{:
 				System.out.println("Regla FUNC - MIRARDER()");
 		:}
 ;
-declar ::= tipodato ident {:
-				System.out.println("Regla DECLAR - TIPO IDENT");
+declar ::= INT ID:ident {:
+				System.out.println("Regla DECLAR - INT IDENT ");			
+				new NodoIdentificador(ident.toString(), 0);		
 		:}
-		| tipodato ident LCOR expr RCOR {:
-				System.out.println("Regla DECL -TIPO IDENT[]");
+		| INT ID:ident LCOR expa:exp RCOR {:
+				System.out.println("Regla DECL - INT IDENT[expa]");
+				new NodoVector(new NodoIdentificador(ident.toString()), Integer.parseInt(exp.toString()) , 0);					
 		:}
-		| tipodato ident LCOR expa RCOR {:
-				System.out.println("Regla DECL - TIPO IDENT[expa]");
+		| BOOL ID:ident {:
+				System.out.println("Regla DECLAR - BOOL IDENT");
+				new NodoIdentificador(ident.toString(), 1);
 		:}
-;
-tipodato ::= INT {:
-			System.out.println("INT");
-		:}
-		| BOOL {:
-			System.out.println("BOOL");
-		:}
+
+		| BOOL ID:ident LCOR expa:exp RCOR {:
+				System.out.println("Regla DECL - BOOOOOOOOLL IDENT[expa]");
+				new NodoVector(new NodoIdentificador(ident.toString()), Integer.parseInt(exp.toString()) , 1);
+		:}		
 ;
 valog ::= TRUE {:
 			System.out.println("TRUE");
+			RESULT = new NodoBool(true);
 		:}
 		| FALSE {:
 			System.out.println("FALSE");
+			RESULT = new NodoBool(false);
 		:}
 ;
-ident ::= ID NUM {:
-			System.out.println("Regla IDENT - ID NUM");
-		:}
-		| ID {:
-			System.out.println("Regla IDENT - ID");
-		:}
-;
-ciclow ::= DO LBRACK seq RBRACK WHILE LPAR expl RPAR {:
+ciclow ::= DO LBRACK seq:lista RBRACK WHILE LPAR expl:test RPAR {:
 			System.out.println("Regla CICLOW");
+			RESULT = new NodoWhile(test, lista);
 		:}
 ;
-asigna ::= ID ASIGNA expr {:
+asigna ::= ID:aidi ASIGNA expa:expaa {:
 			System.out.println("Regla ASIGNA ");
+			RESULT = new NodoAsignacion(new NodoIdentificador(aidi.toString()), expaa);
 		:}
 ;
-opl ::=  MQ {:
-			System.out.println(" > ");
+expl ::= expr:eI MQ expl:eD {:
+			System.out.println("Regla EXPL - >");
+			RESULT = new NodoOperacion(eI,tipoOp.mayor,eD);
 		:}
-		|
-		mQ {:
-			System.out.println(" < ");
+		| expr:eI mQ expl:eD {:
+			System.out.println("Regla EXPL - <");
+			RESULT = new NodoOperacion(eI,tipoOp.menor,eD);
+		:}			
+		| expr:eI MIGUAL expl:eD {:
+			System.out.println("Regla EXPL - >=");
+			RESULT = new NodoOperacion(eI,tipoOp.mayorigual,eD);
 		:}
-		|
-		MIGUAL {:
-			System.out.println(" >= ");
+		| expr:eI mIGUAL expl:eD {:
+			System.out.println("Regla EXPL - <=");
+			RESULT = new NodoOperacion(eI,tipoOp.menorigual,eD);
 		:}
-		| mIGUAL {:
-			System.out.println(" <= ");
+		| expr:eI IGUAL expl:eD {:
+			System.out.println("Regla EXPL - =");
+			RESULT = new NodoOperacion(eI,tipoOp.igual,eD);
 		:}
-		| IGUAL {:
-			System.out.println(" = ");
+		| expr:eI DIF expl:eD {:
+			System.out.println("Regla EXPL - <>");
+			RESULT = new NodoOperacion(eI,tipoOp.diferente,eD);
 		:}
-		| DIF {:
-			System.out.println(" <> ");
+		| expr:eI AND expl:eD {:
+			System.out.println("Regla EXPL - &&");
+			RESULT = new NodoOperacion(eI,tipoOp.y,eD);
 		:}
-		| AND {:
-			System.out.println(" && ");
+		| expr:eI OR expl:eD {:
+			System.out.println("Regla EXPL - ||");
+			RESULT = new NodoOperacion(eI,tipoOp.o,eD);
 		:}
-		| NOT {:
-			System.out.println(" ! ");
-		:}
-		| OR {:
-			System.out.println(" || ");
-		:}
-;
-expl ::= expr opl expl {:
-			System.out.println("Regla EXPL - 1");
-		:}
-		| expr {:
+		| expr:eI NOT expl:eD {:
+			System.out.println("Regla EXPL - !");
+			RESULT = new NodoOperacion(eI,tipoOp.no,eD);
+		:}			
+		| expr:expre {:
 			System.out.println("Regla EXPL - 2");
+			RESULT = expre;			
 		:}
-		| LPAR expn RPAR {:
+		| LPAR expn:expen RPAR {:
 			System.out.println("Regla EXPL - (EXPN)");
+			RESULT = expen;
 		:}
 ;
-expn ::= NOT expr {:
+expn ::= NOT expr:ext {:
 			System.out.println("Regla EXPN ");
+			RESULT = new NodoOperacion( ext, tipoOp.no , null); 
 		:}
 ;
-opa ::= MAS {:
-			System.out.println(" + ");
+expa ::= expr:eI MAS expa:eD {:
+			System.out.println("Regla EXPA - +");
+			RESULT = new NodoOperacion(eI,tipoOp.mas,eD);
 		:}
-		| MENOS {:
-			System.out.println(" - ");
+		|expr:eI MENOS expa:eD {:
+			System.out.println("Regla EXPA - -");
+			RESULT = new NodoOperacion(eI,tipoOp.menos,eD);
+		:}		
+		|expr:eI POR expa:eD {:
+			System.out.println("Regla EXPA - *");
+			RESULT = new NodoOperacion(eI,tipoOp.por,eD);
+		:}	
+		|expr:eI ENTRE expa:eD {:
+			System.out.println("Regla EXPA - /");
+			RESULT = new NodoOperacion(eI,tipoOp.entre,eD);
+		:}	
+		|expr:eI MOD expa:eD {:
+			System.out.println("Regla EXPA - %");
+			RESULT = new NodoOperacion(eI,tipoOp.modulo,eD);
+		:}				
+		| LPAR expa:expe RPAR {:
+			System.out.println("Regla EXPA - (expa) ");
+			RESULT = expe;
 		:}
-		| POR {:
-			System.out.println(" * ");
-		:}
-		| ENTRE {:
-			System.out.println(" / ");
-		:}
-		| MOD {:
-			System.out.println(" % ");
-		:}
+		| expr:expre {:
+			System.out.println("Regla EXPL - 2");
+			RESULT = expre;			
+		:}		
 ;
-expa ::= expa opa expr {:
-			System.out.println("Regla EXPA - 1");
-		:}
-		| LPAR expr RPAR {:
-			System.out.println("Regla EXPA - (expr) ");
-		:}
-;
-sentif ::= IF LPAR expl RPAR LBRACK seq RBRACK {:
+sentif ::= IF LPAR expl:test RPAR LBRACK seq:lista RBRACK {:
 			System.out.println("Regla SENTIF - IF simple");
+			RESULT = new NodoIf(test, lista);
 		:}
-		|IF LPAR expl RPAR LBRACK seq RBRACK ELSE LBRACK seq RBRACK {:
+		|IF LPAR expl:prueba RPAR LBRACK seq:lista RBRACK ELSE LBRACK seq:selse RBRACK {:
 			System.out.println("Regla SENTIF - IF-ELSE");
+			RESULT = new NodoIf(prueba, lista, selse);
 		:}
 ;
-cfor ::= FOR LPAR asigna PCOMA expa PCOMA expl PCOMA RPAR LBRACK seq RBRACK {:
+cfor ::= FOR LPAR asigna:as PCOMA expa:inc PCOMA expl:prueba RPAR LBRACK seq:lista RBRACK {:
 			System.out.println("Regla CFOR");
+			RESULT = new NodoFor(as,prueba,inc,lista);
 		:}
 ;

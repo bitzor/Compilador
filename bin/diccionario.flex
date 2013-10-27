@@ -47,7 +47,15 @@ numero		= {digito}+
 letra			= [a-zA-Z]
 identificador	= {letra}+
 nuevalinea		= \n | \n\r | \r\n
-espacio		= [ \t]+
+espacio		= [ \t]ident ::= ID:aidi NUM:num {:
+			System.out.println("Regla IDENT - ID NUM");
+			RESULT = new NodoIdentificador(aidi+num);			
+		:}
+		| ID:aidi {:
+			System.out.println("Regla IDENT - ID");
+			RESULT = new NodoIdentificador(aidi);
+		:}
+;+
 %%
 "if"            {	if(debug) System.out.println("token IF");
 			return sf.newSymbol("IF",sym.IF);

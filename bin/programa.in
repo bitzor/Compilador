@@ -1,5 +1,27 @@
 programa(){
-	if(a > b){
-		int b;
+	int algo;
+	bool dos;
+	do{
+		if((!N)){
+			a:=b;		
+		}	
+	}while(a>b);
+	for(a := 1; a+1; a<5){	
+		for(a := 1; a+1; a<5){
+			mirarArriba();
+			if(b>c){
+				mirarAbajo();
+			}else{
+				mirarIzq();
+			}		
+		};
+		for(b := 1; b+1; b<5){
+			mirarArriba();
+			if(b>c){
+				mirarAbajo();
+			}else{
+				mirarIzq();
+			}		
+		}			
 	}
 }
