@@ -1,5 +1,3 @@
-package Tiny;
-
 import java.util.*;
 
 
@@ -29,6 +27,7 @@ public class TablaSimbolos {
 		while (raiz != null) {
 	    if (raiz instanceof NodoIdentificador){
 	    	InsertarSimbolo(((NodoIdentificador)raiz).getNombre(),-1);
+	    	System.out.println(((NodoIdentificador)raiz).getNombre());
 	    	//TODO: A�adir el numero de linea y localidad de memoria correcta
 	    }
 	    /* Hago el recorrido recursivo */
@@ -43,9 +42,10 @@ public class TablaSimbolos {
 	    	cargarTabla(((NodoRepeat)raiz).getCuerpo());
 	    	cargarTabla(((NodoRepeat)raiz).getPrueba());
 	    }
-	    else if (raiz instanceof  NodoAsignacion)
+	    else if (raiz instanceof  NodoAsignacion){
+	    	cargarTabla(((NodoAsignacion)raiz).getIdentificador());
 	    	cargarTabla(((NodoAsignacion)raiz).getExpresion());
-	    else if (raiz instanceof  NodoEscribir)
+	    }else if (raiz instanceof  NodoEscribir)
 	    	cargarTabla(((NodoEscribir)raiz).getExpresion());
 	    else if (raiz instanceof NodoOperacion){
 	    	cargarTabla(((NodoOperacion)raiz).getOpIzquierdo());

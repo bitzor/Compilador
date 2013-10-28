@@ -17,6 +17,9 @@ parser code{:
 		System.out.println("IMPRESION DEL AST GENERADO");
 		System.out.println();
 		ast.Util.imprimirAST(root);
+		TablaSimbolos ts = new TablaSimbolos();
+		ts.cargarTabla(root);
+		ts.ImprimirClaves();		
 	}
 :}
 action code {:
@@ -129,7 +132,7 @@ sent ::= func:fun {:
 		:}
 		| declar:decl {:
 				System.out.println("Regla SENT - DECLAR");	
-				RESULT = decl;	
+				RESULT = (NodoIdentificador)decl;	
 		:}
 		| ciclow:ciclo {:
 				System.out.println("Regla SENT - CICLOW");
@@ -187,20 +190,20 @@ func ::= AVANZAR LPAR NUM RPAR{:
 ;
 declar ::= INT ID:ident {:
 				System.out.println("Regla DECLAR - INT IDENT ");			
-				new NodoIdentificador(ident.toString(), 0);		
+				RESULT = new NodoIdentificador(ident, 0);		
 		:}
 		| INT ID:ident LCOR expa:exp RCOR {:
 				System.out.println("Regla DECL - INT IDENT[expa]");
-				new NodoVector(new NodoIdentificador(ident.toString()), Integer.parseInt(exp.toString()) , 0);					
+				RESULT =  new NodoVector(new NodoIdentificador(ident), Integer.parseInt(exp.toString()) , 0);					
 		:}
 		| BOOL ID:ident {:
 				System.out.println("Regla DECLAR - BOOL IDENT");
-				new NodoIdentificador(ident.toString(), 1);
+				RESULT = new NodoIdentificador(ident, 1);
 		:}
 
 		| BOOL ID:ident LCOR expa:exp RCOR {:
 				System.out.println("Regla DECL - BOOOOOOOOLL IDENT[expa]");
-				new NodoVector(new NodoIdentificador(ident.toString()), Integer.parseInt(exp.toString()) , 1);
+				RESULT = new NodoVector(new NodoIdentificador(ident), Integer.parseInt(exp.toString()) , 1);
 		:}		
 ;
 valog ::= TRUE {:

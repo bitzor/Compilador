@@ -1,5 +1,3 @@
-package Tiny;
-
 public class RegistroSimbolo {
 	private String identificador;
 	private int NumLinea;
