@@ -166,7 +166,7 @@ expr ::= NUM:valor {:
 		:}
 		| ID:ident {:
 				System.out.println("Regla EXPR - ID");
-				RESULT = new NodoIdentificador(ident.toString());
+				RESULT = new NodoIdentificador(ident.toString(),-1);
 		:}
 ;
 func ::= AVANZAR LPAR NUM RPAR{:
@@ -190,20 +190,20 @@ func ::= AVANZAR LPAR NUM RPAR{:
 ;
 declar ::= INT ID:ident {:
 				System.out.println("Regla DECLAR - INT IDENT ");			
-				RESULT = new NodoIdentificador(ident, 0);		
+				RESULT = new NodoIdentificador(ident.toString(), 0);		
 		:}
 		| INT ID:ident LCOR expa:exp RCOR {:
 				System.out.println("Regla DECL - INT IDENT[expa]");
-				RESULT =  new NodoVector(new NodoIdentificador(ident), Integer.parseInt(exp.toString()) , 0);					
+				RESULT =  new NodoVector(new NodoIdentificador(ident.toString()), Integer.parseInt(exp.toString()) , 0);					
 		:}
 		| BOOL ID:ident {:
 				System.out.println("Regla DECLAR - BOOL IDENT");
-				RESULT = new NodoIdentificador(ident, 1);
+				RESULT = new NodoIdentificador(ident.toString(), 1);
 		:}
 
 		| BOOL ID:ident LCOR expa:exp RCOR {:
 				System.out.println("Regla DECL - BOOOOOOOOLL IDENT[expa]");
-				RESULT = new NodoVector(new NodoIdentificador(ident), Integer.parseInt(exp.toString()) , 1);
+				RESULT = new NodoVector(new NodoIdentificador(ident.toString()), Integer.parseInt(exp.toString()) , 1);
 		:}		
 ;
 valog ::= TRUE {:

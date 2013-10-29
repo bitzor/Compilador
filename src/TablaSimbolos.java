@@ -26,8 +26,8 @@ public class TablaSimbolos {
 	public void cargarTabla(NodoBase raiz){
 		while (raiz != null) {
 	    if (raiz instanceof NodoIdentificador){
-	    	InsertarSimbolo(((NodoIdentificador)raiz).getNombre(),-1);
-	    	System.out.println(((NodoIdentificador)raiz).getNombre());
+	    	InsertarSimbolo(((NodoIdentificador)raiz).getNombre(),-1,((NodoIdentificador)raiz).getTipo());
+	    	
 	    	//TODO: A�adir el numero de linea y localidad de memoria correcta
 	    }
 	    /* Hago el recorrido recursivo */
@@ -68,12 +68,12 @@ public class TablaSimbolos {
 	}
 	
 	//true es nuevo no existe se insertara, false ya existe NO se vuelve a insertar 
-	public boolean InsertarSimbolo(String identificador, int numLinea){
+	public boolean InsertarSimbolo(String identificador, int numLinea,int tipo){
 		RegistroSimbolo simbolo;
 		if(tabla.containsKey(identificador)){
 			return false;
 		}else{
-			simbolo= new RegistroSimbolo(identificador,numLinea,direccion++);
+			simbolo= new RegistroSimbolo(identificador,numLinea,direccion++,tipo);
 			tabla.put(identificador,simbolo);
 			return true;			
 		}
@@ -88,7 +88,7 @@ public class TablaSimbolos {
 		System.out.println("*** Tabla de Simbolos ***");
 		for( Iterator <String>it = tabla.keySet().iterator(); it.hasNext();) { 
             String s = (String)it.next();
-	    System.out.println("Consegui Key: "+s+" con direccion: " + BuscarSimbolo(s).getDireccionMemoria());
+	    System.out.println("Consegui Key: "+s+" con direccion: " + BuscarSimbolo(s).getDireccionMemoria()+" tipo "+BuscarSimbolo(s).getTipo());
 		}
 	}
 
