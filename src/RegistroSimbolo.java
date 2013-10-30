@@ -4,6 +4,7 @@ public class RegistroSimbolo {
 	private int DireccionMemoria;
 	private int tipoDato;
 	
+	
 	public RegistroSimbolo(String identificador, int numLinea,
 			int direccionMemoria,int tipo) {
 		super();
@@ -11,6 +12,7 @@ public class RegistroSimbolo {
 		NumLinea = numLinea;
 		DireccionMemoria = direccionMemoria;
 		 tipoDato =tipo;
+		
 	}
 
 	public String getIdentificador() {
@@ -27,6 +29,7 @@ public class RegistroSimbolo {
 	public int getTipo() {
 		return tipoDato;
 	}
+
 
 	public void setDireccionMemoria(int direccionMemoria) {
 		DireccionMemoria = direccionMemoria;

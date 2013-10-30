@@ -1,13 +1,3 @@
-/CUP$parser$actions.class
-/Scanner.class
-/Scanner.java~
 /ast
-/diccionario.flex
-/gramatica.cup
-/lib
-/parser.class
-/programa.in
-/sym.class
-/tiny.cup
-/RegistroSimbolo.class
-/TablaSimbolos.class
+/Main.class
+/Semantica.class

@@ -2,25 +2,7 @@ import java_cup.runtime.*;
 import ast.*;
 
 parser code{:
-	public static void main(String args[]) throws Exception {
-		SymbolFactory sf = new DefaultSymbolFactory();
-		parser obj_parser;
-		if (args.length==0) 
-			obj_parser=new parser(new Scanner(System.in,sf),sf);
-		else 
-			obj_parser=new parser(new Scanner(new java.io.FileInputStream(args[0]),sf),sf);
-		
-		obj_parser.parse();	
-    /*Inicio Arbol*/
-    	NodoBase root= obj_parser.action_obj.getASTroot();
-		System.out.println();
-		System.out.println("IMPRESION DEL AST GENERADO");
-		System.out.println();
-		ast.Util.imprimirAST(root);
-		TablaSimbolos ts = new TablaSimbolos();
-		ts.cargarTabla(root);
-		ts.ImprimirClaves();		
-	}
+
 :}
 action code {:
 	private boolean debug=true;
@@ -87,15 +69,12 @@ non terminal NodoBase ciclow;
 non terminal NodoBase cfor;
 non terminal NodoBase asigna;
 non terminal NodoBase sentif;
-non terminal NodoBase tipodato;
 non terminal NodoBase valog;
 non terminal NodoBase ident;
 non terminal NodoBase expr;
 non terminal NodoBase expl;
 non terminal NodoBase expa;
-non terminal NodoBase opl;
 non terminal NodoBase expn;
-non terminal NodoBase opa;
 
 /* Reglas gramaticales */
 programa ::= PROG LPAR RPAR LBRACK seq:s RBRACK {: 
@@ -166,7 +145,7 @@ expr ::= NUM:valor {:
 		:}
 		| ID:ident {:
 				System.out.println("Regla EXPR - ID");
-				RESULT = new NodoIdentificador(ident.toString());
+				RESULT = new NodoIdentificador(ident.toString(),-1);
 		:}
 ;
 func ::= AVANZAR LPAR NUM RPAR{:
@@ -190,20 +169,20 @@ func ::= AVANZAR LPAR NUM RPAR{:
 ;
 declar ::= INT ID:ident {:
 				System.out.println("Regla DECLAR - INT IDENT ");			
-				RESULT = new NodoIdentificador(ident, 0);		
+				RESULT = new NodoIdentificador(ident.toString(), 0);		
 		:}
 		| INT ID:ident LCOR expa:exp RCOR {:
 				System.out.println("Regla DECL - INT IDENT[expa]");
-				RESULT =  new NodoVector(new NodoIdentificador(ident), Integer.parseInt(exp.toString()) , 0);					
+				RESULT =  new NodoVector(new NodoIdentificador(ident.toString()), Integer.parseInt(exp.toString()) , 0);					
 		:}
 		| BOOL ID:ident {:
 				System.out.println("Regla DECLAR - BOOL IDENT");
-				RESULT = new NodoIdentificador(ident, 1);
+				RESULT = new NodoIdentificador(ident.toString(), 1);
 		:}
 
 		| BOOL ID:ident LCOR expa:exp RCOR {:
 				System.out.println("Regla DECL - BOOOOOOOOLL IDENT[expa]");
-				RESULT = new NodoVector(new NodoIdentificador(ident), Integer.parseInt(exp.toString()) , 1);
+				RESULT = new NodoVector(new NodoIdentificador(ident.toString()), Integer.parseInt(exp.toString()) , 1);
 		:}		
 ;
 valog ::= TRUE {:
@@ -223,7 +202,7 @@ ciclow ::= DO LBRACK seq:lista RBRACK WHILE LPAR expl:test RPAR {:
 asigna ::= ID:aidi ASIGNA expa:expaa {:
 			System.out.println("Regla ASIGNA ");
 			RESULT = new NodoAsignacion(new NodoIdentificador(aidi.toString()), expaa);
-		:}
+		:}	
 ;
 expl ::= expr:eI MQ expl:eD {:
 			System.out.println("Regla EXPL - >");

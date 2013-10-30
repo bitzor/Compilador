@@ -38,16 +38,10 @@ public class TablaSimbolos {
 	    		cargarTabla(((NodoIf)raiz).getParteElse());
 	    	}
 	    }
-	    else if (raiz instanceof  NodoRepeat){
-	    	cargarTabla(((NodoRepeat)raiz).getCuerpo());
-	    	cargarTabla(((NodoRepeat)raiz).getPrueba());
-	    }
 	    else if (raiz instanceof  NodoAsignacion){
 	    	cargarTabla(((NodoAsignacion)raiz).getIdentificador());
 	    	cargarTabla(((NodoAsignacion)raiz).getExpresion());
-	    }else if (raiz instanceof  NodoEscribir)
-	    	cargarTabla(((NodoEscribir)raiz).getExpresion());
-	    else if (raiz instanceof NodoOperacion){
+	    }else if (raiz instanceof NodoOperacion){
 	    	cargarTabla(((NodoOperacion)raiz).getOpIzquierdo());
 	    	cargarTabla(((NodoOperacion)raiz).getOpDerecho());
 	    }else if (raiz instanceof  NodoFor){
@@ -55,8 +49,6 @@ public class TablaSimbolos {
 	    	cargarTabla(((NodoFor)raiz).getComp());
 	    	cargarTabla(((NodoFor)raiz).getHast()); //increDecre
 	    	cargarTabla(((NodoFor)raiz).getSente());
-	    }else if (raiz instanceof NodoFunction){
-	    	cargarTabla(((NodoFunction)raiz).getCuerpo());
 	    }else if (raiz instanceof NodoVector){
 	    	cargarTabla(((NodoVector)raiz).getVariable());
 	    }else if (raiz instanceof NodoWhile){
@@ -73,7 +65,7 @@ public class TablaSimbolos {
 		if(tabla.containsKey(identificador)){
 			return false;
 		}else{
-			simbolo= new RegistroSimbolo(identificador,numLinea,direccion++,tipo);
+			simbolo= new RegistroSimbolo(identificador,numLinea,direccion++, tipo);
 			tabla.put(identificador,simbolo);
 			return true;			
 		}

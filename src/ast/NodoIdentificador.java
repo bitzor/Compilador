@@ -20,7 +20,7 @@ public class NodoIdentificador extends NodoBase {
 		return nombre;
 	}
 
-	private int getTipo() {
+	public int getTipo() {
 		return tipo;
 	}
 

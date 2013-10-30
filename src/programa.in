@@ -1,23 +1,12 @@
 programa(){
 	int algo;
-	bool dos;
-	algo:=5;
-	dos:=true;
-	do{
-		if((!N)){
-			a:=b;		
-		}	
-	}while(a>b);
-	for(a := 1; a+1; a<5){	
-		for(a := 1; a+1; a<5){
-			mirarArriba();
-			if(b>c){
-				mirarAbajo();
-			}else{
-				mirarIzq();
-			}		
-		}		
-	};
+	int tres;
+	int dos;
+	tres := 2;
+	dos := 4;
+	algo := 3 > 4;
+	
+	
 	
 	
 }
